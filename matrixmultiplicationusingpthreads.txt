@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+#define MATRIX_SIZE 1000
+#define NUM_THREADS 4
+
+int A[MATRIX_SIZE][MATRIX_SIZE];
+int B[MATRIX_SIZE][MATRIX_SIZE];
+int C[MATRIX_SIZE][MATRIX_SIZE];
+
+pthread_t threads[NUM_THREADS];
+int thread_args[NUM_THREADS];
+
+void *multiply(void *arg) {
+    int thread_num = *(int *) arg;
+    int start = thread_num * (MATRIX_SIZE / NUM_THREADS);
+    int end = start + (MATRIX_SIZE / NUM_THREADS);
+
+    for (int i = start; i < end; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            int sum = 0;
+            for (int k = 0; k < MATRIX_SIZE; k++) {
+                sum += A[i][k] * B[k][j];
+            }
+            C[i][j] = sum;
+        }
+    }
+
+    return NULL;
+}
+
+int main() {
+    // Initialize matrices A and B
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            A[i][j] = rand() % 100;
+            B[i][j] = rand() % 100;
+        }
+    }
+
+    // Create threads and pass thread number as argument
+    for (int i = 0; i < NUM_THREADS; i++) {
+        thread_args[i] = i;
+        pthread_create(&threads[i], NULL, multiply, &thread_args[i]);
+    }
+
+    // Wait for threads to finish
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    // Print result matrix C
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            printf("%d ", C[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
+In this example, w

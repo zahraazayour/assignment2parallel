@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+
+#define MATRIX_SIZE 1000
+
+int A[MATRIX_SIZE][MATRIX_SIZE];
+int B[MATRIX_SIZE][MATRIX_SIZE];
+int C[MATRIX_SIZE][MATRIX_SIZE];
+
+int main() {
+    // Initialize matrices A and B
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            A[i][j] = rand() % 100;
+            B[i][j] = rand() % 100;
+        }
+    }
+
+    // Perform matrix multiplication in parallel
+    #pragma omp parallel for
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            int sum = 0;
+            for (int k = 0; k < MATRIX_SIZE; k++) {
+                sum += A[i][k] * B[k][j];
+            }
+            C[i][j] = sum;
+        }
+    }
+
+    // Print result matrix C
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            printf("%d ", C[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
